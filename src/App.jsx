@@ -781,7 +781,7 @@ const GlobalStyles = () => {
           transition: var(--transition-fast);
         }
         .header-logo {
-        height: 55px; 
+        height: 40px; 
         width: auto;
         display: block;
         margin-top: -10px; /* เลื่อนรูปภาพขึ้น 5 พิกเซล */
@@ -816,7 +816,7 @@ function Header({ onNotificationClick, isMainPage = false }) {
               เช่น '/images/icon.jpg' หรือ '/images/logo.svg'
             */}
             <img 
-              src="/images/logo.jpg" 
+              src="/public/images/logo.jpg" 
               alt="ซิลมีนโมบาย" 
               className="header-logo" 
             />
