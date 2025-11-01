@@ -1,0 +1,24 @@
+/* ลบ CSS เริ่มต้นของ Vite ทิ้งทั้งหมด */
+
+
+/* นี่คือสไตล์สำหรับ Layout หลักใน App.jsx */
+
+.app-container {
+    position: relative;
+    display: flex;
+    min-height: 100vh;
+    /* ใช้ 100vh แทน min-h-screen */
+    width: 100%;
+    flex-direction: column;
+    overflow-x: hidden;
+    /* เว้นที่ด้านล่างสำหรับ Bottom Navigation Bar 
+    (เราจะสร้างทีหลัง)
+    ประมาณ 64px + padding 
+  */
+    padding-bottom: 80px;
+}
+
+.main-content {
+    flex-grow: 1;
+    /* ทำให้เนื้อหายืดเต็มพื้นที่ที่เหลือ */
+}
