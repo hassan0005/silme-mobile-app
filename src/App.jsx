@@ -781,7 +781,7 @@ const GlobalStyles = () => {
           transition: var(--transition-fast);
         }
         .header-logo {
-        height: 130px; 
+        height: 55px; 
         width: auto;
         display: block;
         margin-top: -10px; /* เลื่อนรูปภาพขึ้น 5 พิกเซล */
