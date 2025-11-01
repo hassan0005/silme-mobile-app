@@ -816,7 +816,7 @@ function Header({ onNotificationClick, isMainPage = false }) {
               เช่น '/images/icon.jpg' หรือ '/images/logo.svg'
             */}
             <img 
-              src="/public/images/logo.png" 
+              src="/public/images/logo.jpg" 
               alt="ซิลมีนโมบาย" 
               className="header-logo" 
             />
