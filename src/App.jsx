@@ -870,6 +870,37 @@ const GlobalStyles = () => {
           color: white;
         }
 
+        /* (ใหม่!) --- 14. AllProductsPage Styles --- */
+        .all-products-page {
+          display: flex; 
+          flex-direction: column; 
+          width: 100%; 
+          min-height: 100vh; 
+          animation: fadeIn 0.3s ease-in-out;
+        }
+        .all-products-header {
+          position: sticky; 
+          top: 0; 
+          z-index: 10; 
+          display: flex; 
+          align-items: center; 
+          padding: 1rem; 
+          padding-bottom: 0.5rem; 
+          background-color: var(--background-light-alpha); 
+          backdrop-filter: blur(8px); 
+          border-bottom: 1px solid #f0f0f0;
+        }
+        .all-products-title {
+          font-size: 1.25rem; 
+          font-weight: 700; 
+          text-align: center; 
+          flex-grow: 1; 
+          margin-right: 40px;
+        }
+        .all-products-grid {
+          padding: 1rem 0.75rem;
+        }
+
       `}
     </style>
   );
@@ -997,13 +1028,14 @@ function PromotionCard({ promo, onPromoClick }) {
 }
 
 // (ไฟล์: 'src/components/ProductList.jsx')
-// (อัปเดต!) รับ onToggleFavorite, favorites
-function ProductList({ products, onAddToCart, onProductClick, onToggleFavorite, favorites }) {
+// (อัปเดต!) รับ onSeeAll
+function ProductList({ products, onAddToCart, onProductClick, onToggleFavorite, favorites, onSeeAll }) {
   return (
     <section>
       <div className="section-header">
         <h2 className="section-title">โทรศัพท์ยอดนิยม</h2>
-        <button className="see-all-button">
+        {/* (อัปเดต!) เพิ่ม onClick */}
+        <button className="see-all-button" onClick={onSeeAll}>
           <span>ดูทั้งหมด</span>
           <span className="material-symbols-outlined">arrow_forward_ios</span>
         </button>
@@ -1131,52 +1163,21 @@ function BottomNav({ activeTab, onTabChange, cartItemCount }) {
 }
 
 // --- (ไฟล์: 'src/pages/HomePage.jsx') ---
-// (อัปเดต!) รับ onToggleFavorite, favorites และส่งต่อ
-function HomePage({ onPromoClick, onAddToCart, onProductClick, onNotificationClick, onToggleFavorite, favorites }) {
-  
-  // (อัปเดต!) ย้าย state มาไว้ที่นี่
-  const [activeChip, setActiveChip] = React.useState('all');
-  
-  // (ใหม่!) state สำหรับเก็บข้อความค้นหา
-  const [searchQuery, setSearchQuery] = React.useState('');
-
-  const handleChipChange = (chipId) => {
-    setActiveChip(chipId);
-  };
-  
-  // (ใหม่!) handler สำหรับอัปเดตข้อความค้นหา
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
-
-  // (อัปเดต!) ตรรกะการกรองสินค้า (รวมการค้นหา)
-  const filteredProducts = React.useMemo(() => {
-    
-    // 1. กรองด้วย Chip (หมวดหมู่)
-    let productsByChip;
-    if (activeChip === 'all') {
-      productsByChip = POPULAR_PRODUCTS;
-    } else if (activeChip === 'flagship') {
-      productsByChip = POPULAR_PRODUCTS.filter(p => p.isFlagship);
-    } else {
-      // กรองตามแบรนด์
-      productsByChip = POPULAR_PRODUCTS.filter(p => 
-        p.brand.toLowerCase() === activeChip
-      );
-    }
-    
-    // 2. กรองด้วย Search Query (จากผลลัพธ์ขั้นตอนที่ 1)
-    if (!searchQuery) {
-      return productsByChip; // ถ้าช่องค้นหาว่าง, ส่งคืนผลลัพธ์ตาม Chip
-    }
-    
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    return productsByChip.filter(product =>
-      product.name.toLowerCase().includes(lowerCaseQuery) ||
-      product.brand.toLowerCase().includes(lowerCaseQuery)
-    );
-
-  }, [activeChip, searchQuery]); // (อัปเดต!) คำนวณใหม่เมื่อ chip หรือ query เปลี่ยน
+// (อัปเดต!) รับ props เพิ่ม (activeChip, onChipChange, searchQuery, onSearchChange, filteredProducts, onSeeAll)
+function HomePage({ 
+  onPromoClick, 
+  onAddToCart, 
+  onProductClick, 
+  onNotificationClick, 
+  onToggleFavorite, 
+  favorites,
+  activeChip,
+  onChipChange,
+  searchQuery,
+  onSearchChange,
+  filteredProducts,
+  onSeeAll
+}) {
 
   return (
     <>
@@ -1188,7 +1189,7 @@ function HomePage({ onPromoClick, onAddToCart, onProductClick, onNotificationCli
         <div className="search-and-action-wrapper">
           <SearchBar 
             searchQuery={searchQuery}
-            onSearchChange={handleSearchChange}
+            onSearchChange={onSearchChange}
           />
           <button className="search-action-button" onClick={onNotificationClick}>
             <span className="material-symbols-outlined">notifications</span>
@@ -1196,19 +1197,20 @@ function HomePage({ onPromoClick, onAddToCart, onProductClick, onNotificationCli
         </div>
         
         <CategoryChips 
-          activeChip={activeChip} // ส่ง state ลงไป
-          onChipChange={handleChipChange} // ส่งฟังก์ชันลงไป
+          activeChip={activeChip} // (อัปเดต!) รับจาก prop
+          onChipChange={onChipChange} // (อัปเดต!) รับจาก prop
         />
         <PromotionCarousel 
           promotions={PROMOTIONS} 
           onPromoClick={onPromoClick}
         />
         <ProductList 
-          products={filteredProducts} // (อัปเดต!) ส่งสินค้าที่กรองแล้ว
+          products={filteredProducts} // (อัปเดต!) รับจาก prop
           onAddToCart={onAddToCart}
           onProductClick={onProductClick}
           onToggleFavorite={onToggleFavorite} // (ใหม่!) ส่งต่อ
           favorites={favorites} // (ใหม่!) ส่งต่อ
+          onSeeAll={onSeeAll} // (ใหม่!) ส่งต่อ
         />
       </main>
     </>
@@ -1599,13 +1601,63 @@ function NotificationModal({ onClose }) {
   );
 }
 
+// (ใหม่!) --- (ไฟล์: 'src/pages/AllProductsPage.jsx') ---
+// Component ใหม่สำหรับแสดงสินค้าทั้งหมด
+function AllProductsPage({ 
+  products, 
+  activeChip, 
+  onGoBack, 
+  onProductClick, 
+  onAddToCart, 
+  onToggleFavorite, 
+  favorites 
+}) {
+  
+  // หาชื่อหมวดหมู่จาก activeChip
+  const categoryName = CATEGORIES.find(c => c.id === activeChip)?.name || 'สินค้าทั้งหมด';
+  const pageTitle = activeChip === 'all' ? 'โทรศัพท์ยอดนิยม' : categoryName;
+
+  return (
+    <div className="all-products-page">
+      <header className="all-products-header">
+        <button onClick={onGoBack} className="icon-button back-button">
+          <span className="material-symbols-outlined">arrow_back_ios_new</span>
+        </button>
+        <h1 className="all-products-title">{pageTitle}</h1>
+      </header>
+      <main className="main-content all-products-grid">
+        {products.length === 0 ? (
+          <div className="page-placeholder" style={{paddingTop: '5rem'}}>
+            <span className="material-symbols-outlined">search_off</span>
+            <h2>ไม่พบสินค้า</h2>
+            <p>ไม่พบสินค้าที่ตรงกับการค้นหาของคุณ</p>
+          </div>
+        ) : (
+          <div className="product-list-grid">
+            {products.map((product) => (
+              <ProductCard 
+                key={product.id} 
+                product={product} 
+                onAddToCart={onAddToCart}
+                onProductClick={onProductClick}
+                onToggleFavorite={onToggleFavorite}
+                favorites={favorites}
+              />
+            ))}
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
 
 // ==================================================================
 // --- 4. MAIN APP COMPONENT ---
 // ==================================================================
 function App() {
   
-  // State 1: View ('home', 'promoDetail', 'cart', 'productDetail', 'favorite', 'account')
+  // (อัปเดต!) State 1: View ('home', 'promoDetail', 'cart', 'productDetail', 'favorite', 'account', 'allProducts')
   const [currentView, setCurrentView] = React.useState('home');
   
   // State 2: Active Tab ('home', 'favorite', 'cart', 'account')
@@ -1625,6 +1677,52 @@ function App() {
   
   // (ใหม่!) State 7: Favorites
   const [favorites, setFavorites] = React.useState([]);
+  
+  // (ใหม่!) State 8: ย้าย activeChip จาก HomePage ขึ้นมา
+  const [activeChip, setActiveChip] = React.useState('all');
+  
+  // (ใหม่!) State 9: ย้าย searchQuery จาก HomePage ขึ้นมา
+  const [searchQuery, setSearchQuery] = React.useState('');
+
+
+  // (ใหม่!) --- ฟังก์ชันจัดการ Filter และ Search (ย้ายมาจาก HomePage) ---
+  
+  const handleChipChange = (chipId) => {
+    setActiveChip(chipId);
+  };
+  
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // (ใหม่!) ตรรกะการกรองสินค้า (ย้ายมาจาก HomePage)
+  const filteredProducts = React.useMemo(() => {
+    
+    // 1. กรองด้วย Chip (หมวดหมู่)
+    let productsByChip;
+    if (activeChip === 'all') {
+      productsByChip = POPULAR_PRODUCTS;
+    } else if (activeChip === 'flagship') {
+      productsByChip = POPULAR_PRODUCTS.filter(p => p.isFlagship);
+    } else {
+      // กรองตามแบรนด์
+      productsByChip = POPULAR_PRODUCTS.filter(p => 
+        p.brand.toLowerCase() === activeChip
+      );
+    }
+    
+    // 2. กรองด้วย Search Query (จากผลลัพธ์ขั้นตอนที่ 1)
+    if (!searchQuery) {
+      return productsByChip; // ถ้าช่องค้นหาว่าง, ส่งคืนผลลัพธ์ตาม Chip
+    }
+    
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    return productsByChip.filter(product =>
+      product.name.toLowerCase().includes(lowerCaseQuery) ||
+      product.brand.toLowerCase().includes(lowerCaseQuery)
+    );
+
+  }, [activeChip, searchQuery]); // คำนวณใหม่เมื่อ chip หรือ query เปลี่ยน
 
 
   // --- ฟังก์ชันจัดการตะกร้า ---
@@ -1685,6 +1783,11 @@ function App() {
     setSelectedProductId(productId);
     setCurrentView('productDetail');
   };
+  
+  // (ใหม่!) ฟังก์ชันสำหรับปุ่ม "ดูทั้งหมด"
+  const handleSeeAll = () => {
+    setCurrentView('allProducts');
+  };
 
   const handleGoBack = () => {
     // (อัปเดต!) กลับไปหน้าล่าสุดที่ผู้ใช้อยู่
@@ -1741,6 +1844,13 @@ function App() {
           onNotificationClick={handleNotificationClick}
           favorites={favorites} // (ใหม่!)
           onToggleFavorite={handleToggleFavorite} // (ใหม่!)
+          // (ใหม่!) ส่ง state และ handler สำหรับ filter/search
+          activeChip={activeChip}
+          onChipChange={handleChipChange}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          filteredProducts={filteredProducts}
+          onSeeAll={handleSeeAll} // (ใหม่!)
         />
       )}
       
@@ -1788,10 +1898,23 @@ function App() {
         />
       )}
       
+      {/* (ใหม่!) หน้า 'สินค้าทั้งหมด' */}
+      {currentView === 'allProducts' && (
+        <AllProductsPage
+          products={filteredProducts}
+          activeChip={activeChip}
+          onGoBack={handleGoBack}
+          onProductClick={handleProductClick}
+          onAddToCart={handleAddToCart}
+          onToggleFavorite={handleToggleFavorite}
+          favorites={favorites}
+        />
+      )}
+      
       {/* --- จบการสลับหน้า --- */}
 
-      {/* (อัปเดต!) ไม่ต้องแสดง BottomNav ถ้าอยู่ในหน้ารายละเอียด */}
-      {currentView !== 'promoDetail' && currentView !== 'productDetail' && ( 
+      {/* (อัปเดต!) ไม่ต้องแสดง BottomNav ถ้าอยู่ในหน้ารายละเอียด หรือหน้า 'สินค้าทั้งหมด' */}
+      {currentView !== 'promoDetail' && currentView !== 'productDetail' && currentView !== 'allProducts' && ( 
         <BottomNav 
           activeTab={activeTab} 
           onTabChange={handleTabChange}
@@ -1805,3 +1928,4 @@ function App() {
 
 // (อัปเดต!) เปลี่ยนเป็น default export
 export default App;
+
