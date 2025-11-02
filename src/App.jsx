@@ -340,12 +340,25 @@ const GlobalStyles = () => {
         }
         .header-container { display: flex; align-items: center; justify-content: space-between; padding: 1rem; padding-bottom: 0.5rem; }
         
-        /* (อัปเดต!) ซ่อน placeholder ชิดซ้าย */
-        .header-logo-placeholder { 
-          width: 48px; 
+        /* (อัปเดต!) เปลี่ยนจาก .header-logo-placeholder */
+        .header-logo-wrapper { 
+          width: auto; /* ปรับความกว้างอัตโนมัติ */
           flex-shrink: 0; 
-          display: none; 
+          display: block; 
         }
+
+        /* (ใหม่!) คลาสโลโก้ที่ปรับขนาดได้ตามที่คุณขอ */
+        .header-logo {
+          /* - ขนาดเล็กสุด: 35px (บนจอมือถือที่เล็กมาก)
+            - ขนาดที่ชอบ (Scalable): 10vw (10% ของความกว้างจอ)
+            - ขนาดใหญ่สุด: 45px (บนจอที่ใหญ่มากๆ)
+          */
+          height: clamp(35px, 10vw, 45px);
+          width: auto;
+          display: block;
+          margin-top: -5px; /* (ปรับเล็กน้อย) */
+        }
+        
         .header-action { width: 48px; flex-shrink: 0; display: flex; justify-content: flex-end; }
         
         /* (อัปเดต!) สไตล์หัวเรื่องใหญ่ (iOS) */
@@ -363,12 +376,76 @@ const GlobalStyles = () => {
         .icon-button:hover { background-color: var(--card-light); }
         .icon-button .material-symbols-outlined { font-size: 24px; }
 
-        /* --- 4. SearchBar Styles --- */
-        .search-bar-padding { padding: 0.75rem 0.75rem; }
-        .search-input-wrapper { display: flex; align-items: stretch; height: 48px; width: 100%; border-radius: 1rem; background-color: var(--background-light); overflow: hidden; box-shadow: var(--shadow); }
-        .search-icon { display: flex; align-items: center; justify-content: center; padding-left: 1rem; color: var(--text-secondary); }
-        .search-input { flex-grow: 1; min-width: 0; height: 100%; padding: 0.5rem 1rem 0.5rem 0.5rem; font-family: var(--font-display); font-size: 1rem; color: var(--text-light); background-color: var(--background-light); border: none; outline: none; }
+        /* --- 4. SearchBar & Action Styles (อัปเดต) --- */
+        
+        /* (ใหม่!) กล่องหุ้ม Search + Notify */
+        .search-and-action-wrapper {
+          display: flex;
+          align-items: center; 
+          gap: 0.75rem;
+          padding: 0.75rem 0.75rem; /* ย้าย Padding มาไว้ที่นี่ */
+        }
+
+        /* (อัปเดต!) ตัว SearchBar เอง */
+        .search-bar-padding {
+          padding: 0; /* ลบ Padding เดิมออก */
+          flex-grow: 1; /* (สำคัญ!) สั่งให้ช่องค้นหายืดจนสุด */
+        }
+        
+        .search-input-wrapper { 
+          display: flex; 
+          align-items: center; /* (แก้เคอร์เซอร์) */
+          height: 48px; 
+          width: 100%; 
+          border-radius: 1rem; 
+          background-color: var(--background-light); 
+          overflow: hidden; 
+          box-shadow: var(--shadow); 
+        }
+        .search-icon { 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          padding-left: 1rem; 
+          color: var(--text-secondary); 
+        }
+        .search-input { 
+          flex-grow: 1; 
+          min-width: 0; 
+          /* (แก้เคอร์เซอร์) ลบ 'height: 100%' ออก */
+          padding: 0.5rem 1rem 0.5rem 0.5rem; 
+          font-family: var(--font-display); 
+          font-size: 1rem; 
+          color: var(--text-light); 
+          background-color: var(--background-light); 
+          border: none; 
+          outline: none; 
+        }
         .search-input::placeholder { color: var(--text-secondary); font-weight: 400; }
+
+        /* (ใหม่!) สไตล์ปุ่ม Notify ที่อยู่ข้างๆ Search */
+        .search-action-button {
+          flex-shrink: 0; /* ป้องกันปุ่มหด */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 48px; /* ทำให้สูงเท่า SearchBar */
+          height: 48px; /* ทำให้สูงเท่า SearchBar */
+          border-radius: 1rem; /* ทำให้ขอบมนเท่า SearchBar */
+          background-color: var(--background-light);
+          box-shadow: var(--shadow);
+          border: none;
+          cursor: pointer;
+          color: var(--text-light);
+          transition: var(--transition-fast);
+        }
+        .search-action-button:hover {
+          background-color: var(--card-light);
+        }
+        .search-action-button .material-symbols-outlined {
+          font-size: 24px;
+        }
+
 
         /* --- 5. CategoryChips (Pill Style) --- */
         
@@ -781,10 +858,12 @@ const GlobalStyles = () => {
           transition: var(--transition-fast);
         }
         .header-logo {
-        height: 40px; 
-        width: auto;
-        display: block;
-        margin-top: -10px; /* เลื่อนรูปภาพขึ้น 5 พิกเซล */
+         height: clamp(45px, 10vw, 105px);
+         width: auto;
+         display: block;
+
+         /* (อัปเดต!) เปลี่ยน 1 บรรทัดนี้ */
+         margin: -5px auto 0; 
         }
         .logout-button:hover {
           background-color: var(--red);
@@ -802,29 +881,31 @@ const GlobalStyles = () => {
 
 // (ไฟล์: 'src/components/Header.jsx')
 // (อัปเดต!) รับ onNotificationClick และ isMainPage
-function Header({ onNotificationClick, isMainPage = false }) {
+// (ไฟล์ Header.js หรือที่ที่คุณนิยาม Header)
+
+// (อัปเดต!) ลบ onNotificationClick ออกจาก props
+function Header({ isMainPage = false }) { 
   return (
-    // (อัปเดต!) เพิ่มคลาส .main-header ถ้า isMainPage เป็น true
     <header className={`app-header ${isMainPage ? 'main-header' : ''}`}>
       <div className="header-container">
-        <div className="header-logo-placeholder"></div>
         
-        {/* (อัปเดต!) เปลี่ยนจากข้อความเป็นรูปภาพโลโก้ */}
-        <h1 className="header-title">
+        {/* ตัวซ้าย (ซ่อนไว้ ให้โลโก้อยู่กลาง) */}
+        <div className="header-logo-placeholder" style={{ width: '48px' }}></div> 
+        
+        {/* โลโก้ (อยู่ตรงกลาง) */}
+        <h1 className="header-title" style={{ textAlign: 'center' }}>
           <a href="/">
-            {/* เปลี่ยน path ตรง 'src' ให้ตรงกับไฟล์ของคุณ
-              เช่น '/images/icon.jpg' หรือ '/images/logo.svg'
-            */}
             <img 
-              src="/images/logo.jpg" 
+              src="/images/logo.jpg" // (แก้ path โลโก้ของคุณ)
               alt="ซิลมีนโมบาย" 
-              className="header-logo" 
+              className="header-logo" // (คุณต้องเพิ่ม CSS .header-logo ที่เคยทำไว้)
             />
           </a>
         </h1>
         
-        <div className="header-action">
-          <button className="icon-button" onClick={onNotificationClick}>
+        {/* (อัปเดต!) ซ่อนปุ่มเดิม เพื่อให้โลโก้อยู่กลาง */}
+        <div className="header-action" style={{ visibility: 'hidden', pointerEvents: 'none' }}>
+          <button className="icon-button" disabled>
             <span className="material-symbols-outlined">notifications</span>
           </button>
         </div>
@@ -833,21 +914,24 @@ function Header({ onNotificationClick, isMainPage = false }) {
   );
 }
 
-// (ไฟล์: 'src/components/SearchBar.jsx')
-function SearchBar() {
-  // ... (โค้ด SearchBar เหมือนเดิม) ...
+// (ไฟล์ SearchBar.js หรือที่ที่คุณนิยาม Component)
+
+function SearchBar({ searchTerm, onSearchChange }) {
   return (
+    // ใช้ .search-bar-padding เป็นตัวหุ้มที่จะยืดขยาย
     <div className="search-bar-padding">
-      <label className="search-input-wrapper">
+      <div className="search-input-wrapper">
         <div className="search-icon">
           <span className="material-symbols-outlined">search</span>
         </div>
         <input 
           type="text" 
           className="search-input" 
-          placeholder="ค้นหารุ่นโทรศัพท์, ยี่ห้อ..." 
+          placeholder="ค้นหามือถือ..." 
+          value={searchTerm}
+          onChange={onSearchChange}
         />
-      </label>
+      </div>
     </div>
   );
 }
@@ -1052,32 +1136,65 @@ function HomePage({ onPromoClick, onAddToCart, onProductClick, onNotificationCli
   
   // (อัปเดต!) ย้าย state มาไว้ที่นี่
   const [activeChip, setActiveChip] = React.useState('all');
+  
+  // (ใหม่!) state สำหรับเก็บข้อความค้นหา
+  const [searchQuery, setSearchQuery] = React.useState('');
 
   const handleChipChange = (chipId) => {
     setActiveChip(chipId);
   };
+  
+  // (ใหม่!) handler สำหรับอัปเดตข้อความค้นหา
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
 
-  // (อัปเดต!) ตรรกะการกรองสินค้า
+  // (อัปเดต!) ตรรกะการกรองสินค้า (รวมการค้นหา)
   const filteredProducts = React.useMemo(() => {
-    // ใช้ useMemo เพื่อประสิทธิภาพ
+    
+    // 1. กรองด้วย Chip (หมวดหมู่)
+    let productsByChip;
     if (activeChip === 'all') {
-      return POPULAR_PRODUCTS;
+      productsByChip = POPULAR_PRODUCTS;
+    } else if (activeChip === 'flagship') {
+      productsByChip = POPULAR_PRODUCTS.filter(p => p.isFlagship);
+    } else {
+      // กรองตามแบรนด์
+      productsByChip = POPULAR_PRODUCTS.filter(p => 
+        p.brand.toLowerCase() === activeChip
+      );
     }
-    if (activeChip === 'flagship') {
-      return POPULAR_PRODUCTS.filter(p => p.isFlagship);
+    
+    // 2. กรองด้วย Search Query (จากผลลัพธ์ขั้นตอนที่ 1)
+    if (!searchQuery) {
+      return productsByChip; // ถ้าช่องค้นหาว่าง, ส่งคืนผลลัพธ์ตาม Chip
     }
-    // กรองตามแบรนด์ (apple, samsung, xiaomi)
-    return POPULAR_PRODUCTS.filter(p => 
-      p.brand.toLowerCase() === activeChip
+    
+    const lowerCaseQuery = searchQuery.toLowerCase();
+    return productsByChip.filter(product =>
+      product.name.toLowerCase().includes(lowerCaseQuery) ||
+      product.brand.toLowerCase().includes(lowerCaseQuery)
     );
-  }, [activeChip]); // คำนวณใหม่เมื่อ activeChip เปลี่ยน
+
+  }, [activeChip, searchQuery]); // (อัปเดต!) คำนวณใหม่เมื่อ chip หรือ query เปลี่ยน
 
   return (
     <>
-      {/* (อัปเดต!) ส่ง isMainPage={true} */}
-      <Header onNotificationClick={onNotificationClick} isMainPage={true} />
+      {/* (อัปเดต!) ส่ง isMainPage={true} และลบ onNotificationClick */}
+      <Header isMainPage={true} />
       <main className="main-content">
-        <SearchBar />
+        
+        {/* (อัปเดต!) สร้าง Wrapper ใหม่สำหรับ Search + Notify */}
+        <div className="search-and-action-wrapper">
+          <SearchBar 
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+          />
+          <button className="search-action-button" onClick={onNotificationClick}>
+            <span className="material-symbols-outlined">notifications</span>
+          </button>
+        </div>
+        
         <CategoryChips 
           activeChip={activeChip} // ส่ง state ลงไป
           onChipChange={handleChipChange} // ส่งฟังก์ชันลงไป
@@ -1688,4 +1805,3 @@ function App() {
 
 // (อัปเดต!) เปลี่ยนเป็น default export
 export default App;
-
